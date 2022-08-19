@@ -42,24 +42,11 @@ public class TurnSystem {
         print(current.getNext());
     }
 
-    public Turn search(int goal){
-        return search(goal, head);
-    }
-    //el rpivado es el metodo recursivo
-    private Turn search(int goal, Turn current){
-        if(current == null){
-            return null;
-        }
-        if(current.getValue()==goal){
-            return current;
-        }
-        return search(goal,current.getNext());
-    }
     public void delete(int value){
         delete(value,head);
     }
     private void delete(int goal, Turn current){
-        if(goal == head.getValue()){
+        if(head != null && goal == head.getValue()){
             Turn prev = current.getPrev();
             Turn next = current.getNext();
             prev.setNext(next);
@@ -67,22 +54,19 @@ public class TurnSystem {
             head = next;
             return;
         }
-        if(goal == head.getValue() && head.getNext()==null){
-            head=null;
-            currentTurn=null;
-        }
-        if(goal == current.getValue()){
+        if(current != null && goal == current.getValue()){
             Turn prev = current.getPrev();
             Turn next = current.getNext();
             prev.setNext(next);
             next.setPrev(prev);
             return;
         }
-        if(current.getNext()==head){
+        if(current != null && current.getNext()==head){
             return;
         }
-        delete(goal, current.getNext());
-
+        if (current != null) {
+            delete(goal, current.getNext());
+        }
     }
     public void showTurn(){
         if(head==null){
@@ -97,9 +81,21 @@ public class TurnSystem {
         }else {
             Turn provisional = currentTurn;
             System.out.println("The turn " + provisional.getValue() + " was attended");
-            currentTurn = currentTurn.getNext();
+            if(currentTurn.getNext()==head){
+                System.out.println("AAAAAAAAAAAAAAAAAA");
+                head=null;
+                currentTurn=null;
+            }else {
+                currentTurn = currentTurn.getNext();
+            }
             delete(provisional.getValue());
-            System.out.println("The next turn is " + currentTurn.getValue());
+            String msg = "";
+            if (currentTurn == null) {
+                msg = "none";
+            } else {
+                msg = String.valueOf(currentTurn.getValue());
+            }
+            System.out.println("The next turn is " + msg);
         }
     }
     public void passTurn(){
@@ -112,7 +108,13 @@ public class TurnSystem {
                 currentTurn = provisional.getNext();
                 System.out.println("The turn "+provisional.getValue()+" was deleted");
                 delete(provisional.getValue());
-                System.out.println("The next turn is "+currentTurn.getValue());
+                String msg = "";
+                if (currentTurn == null) {
+                    msg = "none";
+                } else {
+                    msg = String.valueOf(currentTurn.getValue());
+                }
+                System.out.println("The next turn is " + msg);
             }else {
                 currentTurn = currentTurn.getNext();
                 System.out.println("The next turn is "+currentTurn.getValue());
